@@ -53,21 +53,23 @@ jobs:
           role-to-assume: arn:aws:iam::1234567891012:role/cdk_github_actions
           role-session-name: github
       - name: Diff
-        uses: corymhall/cdk-diff-action@v1.0.0
+        uses: corymhall/cdk-diff-action@v2
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-You can also use the `v1-beta` branch to keep up to date.
+This action supports semver versioning.
+
+For example, to get the latest `v1.x.x` version.
 
 ```yml
-jobs:
-  Synth:
-    steps:
-      - name: Diff
-        uses: corymhall/cdk-diff-action@v1-beta
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+uses: corymhall/cdk-diff-action@v1
+```
+
+Or to get the latest `v1.1.x` version.
+
+```yml
+uses: corymhall/cdk-diff-action@v1.1
 ```
 
 ### Allow Destroy Types
@@ -80,25 +82,33 @@ jobs:
   Synth:
     steps:
       - name: Diff
-        uses: corymhall/cdk-diff-action@v1-beta
+        uses: corymhall/cdk-diff-action@v2
         with:
-          allowedDestroyTypes: "AWS::ECS::TaskDefinition,AWS::CloudWatch::Dashboard"
+          allowedDestroyTypes: |
+            AWS::ECS::TaskDefinition
+            AWS::CloudWatch::Dashboard
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
 ```
 
 ### Disable showing diff for stages
 
-You can disable displaying the diff for certain stages by using `noDiffForStages`
+You can disable displaying the diff for certain stages or stacks by using
+`stackSelectorPatterns`. `stackSelectorPatterns` using `glob` patterns to filter
+which stacks to diff. To exclude stacks you can use an exclude pattern (e.g.
+`!SomeStage/SampleStack`). To exclude an entire stage you would provide
+`!SomeStage/*`.
 
 ```yml
 jobs:
   Synth:
     steps:
       - name: Diff
-        uses: corymhall/cdk-diff-action@v1-beta
+        uses: corymhall/cdk-diff-action@v2
         with:
-          noDiffForStages: "Stage1,Stage2"
+          StackSelectorPatterns: |
+            !Stage1/*
+            !Stage2/*
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -112,9 +122,11 @@ jobs:
   Synth:
     steps:
       - name: Diff
-        uses: corymhall/cdk-diff-action@v1-beta
+        uses: corymhall/cdk-diff-action@v2
         with:
-          noFailOnDestructiveChanges: "Stage1,Stage2"
+          noFailOnDestructiveChanges: |
+            Stage1
+            Stage2
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -128,7 +140,7 @@ jobs:
   Synth:
     steps:
       - name: Diff
-        uses: corymhall/cdk-diff-action@v1-beta
+        uses: corymhall/cdk-diff-action@v2
         with:
           failOnDestructiveChanges: false
           githubToken: ${{ secrets.GITHUB_TOKEN }}
